@@ -1,0 +1,25 @@
+version: '3.9'
+
+services:
+  mqtt-broker:
+    image: eclipse-mosquitto:latest
+    container_name: mqtt-broker
+    ports:
+      - "1883:1883"
+
+  subscriber:
+    build:
+      context: .
+      dockerfile: subscriber/Dockerfile
+    container_name: subscriber
+    depends_on:
+      - mqtt-broker
+
+  publisher:
+    build:
+      context: .
+      dockerfile: publisher/Dockerfile
+    container_name: publisher
+    depends_on:
+      - mqtt-broker
+      - subscriber
