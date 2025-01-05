@@ -1,6 +1,6 @@
 import asyncio
 import speedtest
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from ping3 import ping
 from concurrent.futures import ThreadPoolExecutor
 
@@ -13,7 +13,19 @@ class NetworkMonitor(object):
         self.speed_metrics = None
         self.ping_metrics = None
 
-    async def analyze(self):
+    def get_metrics(self):
+        return {
+            "ping": self.ping_metrics.to_dict(),
+            "speed": self.speed_metrics.to_dict(),
+        }
+
+    def start(self):
+        asyncio.run(self.__run_monitor())
+
+    async def __run_monitor(self):
+        await self.__monitor()
+
+    async def __monitor(self):
         await asyncio.gather(
             self.__get_ping_stats(),
             self.__get_speed_stats()
@@ -75,9 +87,15 @@ class SpeedMetrics:
     download_speed: float
     upload_speed: float
 
+    def to_dict(self):
+        return asdict(self)
+
 
 @dataclass
 class PingMetrics:
     avg_latency: float
     avg_packet_loss: float
     avg_jitter: float
+
+    def to_dict(self):
+        return asdict(self)
