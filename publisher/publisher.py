@@ -1,10 +1,9 @@
 import time
 import json
-from paho.mqtt.enums import CallbackAPIVersion
 from network_monitor import NetworkMonitor
-import paho.mqtt.client as mqtt
+from paho.mqtt import client as mqtt
 
-client = mqtt.Client(callback_api_version=CallbackAPIVersion.VERSION2, client_id="Publisher")
+client = mqtt.Client(client_id="Publisher", callback_api_version=mqtt.CallbackAPIVersion.VERSION2)
 
 client.connect("mqtt-broker", 1883)
 while True:

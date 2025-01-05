@@ -1,5 +1,4 @@
-from paho.mqtt.enums import CallbackAPIVersion
-import paho.mqtt.client as mqtt
+from paho.mqtt import client as mqtt
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -10,7 +9,7 @@ def on_message(client, userdata, message):
     logger.info(f"Received: {message.payload.decode()}")
 
 
-client = mqtt.Client(callback_api_version=CallbackAPIVersion.VERSION2, client_id="Subscriber")
+client = mqtt.Client(client_id="Subscriber", callback_api_version=mqtt.CallbackAPIVersion.VERSION2)
 client.connect("mqtt-broker", 1883)
 client.subscribe("test/topic")
 client.on_message = on_message

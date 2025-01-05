@@ -16,7 +16,7 @@ class NetworkMonitor(object):
     def get_metrics(self):
         return {
             "ping": self.ping_metrics.to_dict(),
-            "speed": self.speed_metrics.to_dict(),
+            # "speed": self.speed_metrics.to_dict(),
         }
 
     def start(self):
@@ -28,7 +28,7 @@ class NetworkMonitor(object):
     async def __monitor(self):
         await asyncio.gather(
             self.__get_ping_stats(),
-            self.__get_speed_stats()
+            # self.__get_speed_stats()
         )
 
     async def __get_ping_stats(self):
