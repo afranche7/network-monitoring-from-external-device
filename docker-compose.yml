@@ -1,6 +1,22 @@
 version: '3.9'
 
 services:
+  influx-database:
+    image: influxdb:2.7.11
+    container_name: influx-database
+    ports:
+      - "8086:8086"
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=admin
+      - DOCKER_INFLUXDB_INIT_ORG=my-org
+      - DOCKER_INFLUXDB_INIT_BUCKET=network-metrics
+      - DOCKER_INFLUXDB_INIT_RETENTION=7d
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-token
+    networks:
+      - influx-network
+
   mqtt-broker:
     image: eclipse-mosquitto:latest
     container_name: mqtt-broker
@@ -8,6 +24,8 @@ services:
       - "1883:1883"
     volumes:
       - ./config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+    depends_on:
+      - influx-database
 
   subscriber:
     build:
@@ -16,6 +34,8 @@ services:
     container_name: subscriber
     depends_on:
       - mqtt-broker
+    networks:
+      - influx-network
 
   publisher:
     build:
@@ -23,5 +43,8 @@ services:
       dockerfile: publisher/Dockerfile
     container_name: publisher
     depends_on:
-      - mqtt-broker
       - subscriber
+
+networks:
+  influx-network:
+    driver: bridge

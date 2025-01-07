@@ -1,3 +1,4 @@
 speedtest-cli
 ping3
 paho-mqtt
+influxdb-client[ciso]
