@@ -4,6 +4,15 @@ The goal of this project is to have the publisher service run on an external dev
 to periodically monitor the network and forward the data to the MQTT broker.
 Then, the subscriber service will consume the MQTT message and store it as time series data in the influx database.
 
+## Ping Metrics in InfluxDB UI
+### All metrics graph
+![Capture 3](https://github.com/user-attachments/assets/8a570601-7ce1-4bb2-9c0e-8c28577aa3fc)
+### Jitter
+![Capture 4](https://github.com/user-attachments/assets/96929308-725d-4de3-bd3d-6a2abb0379be)
+### Latency
+![Capture 5](https://github.com/user-attachments/assets/7eca44db-5b2d-4afd-be24-5dc7ae984539)
+
+
 ## How it works
 Every 5 seconds the publisher service will start a NetworkMonitor to measure ping metrics.
 To collect ping metrics, the NetworkMonitor will ping 3 times each of these sites:
