@@ -1,21 +1,24 @@
 version: '3.9'
 
 services:
-  influx-database:
+  influxdb:
     image: influxdb:2.7.11
-    container_name: influx-database
+    container_name: influxdb
     ports:
       - "8086:8086"
     environment:
       - DOCKER_INFLUXDB_INIT_MODE=setup
       - DOCKER_INFLUXDB_INIT_USERNAME=admin
-      - DOCKER_INFLUXDB_INIT_PASSWORD=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=Admin1234!
       - DOCKER_INFLUXDB_INIT_ORG=my-org
       - DOCKER_INFLUXDB_INIT_BUCKET=network-metrics
       - DOCKER_INFLUXDB_INIT_RETENTION=7d
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-token
-    networks:
-      - influx-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   mqtt-broker:
     image: eclipse-mosquitto:latest
@@ -25,17 +28,29 @@ services:
     volumes:
       - ./config/mosquitto.conf:/mosquitto/config/mosquitto.conf
     depends_on:
-      - influx-database
+      - influxdb
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   subscriber:
     build:
       context: .
       dockerfile: subscriber/Dockerfile
     container_name: subscriber
+    environment:
+      - INFLUXDB_BUCKET=network-metrics
+      - INFLUXDB_ORG=my-org
+      - INFLUXDB_TOKEN=my-token
     depends_on:
       - mqtt-broker
-    networks:
-      - influx-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   publisher:
     build:
@@ -44,7 +59,8 @@ services:
     container_name: publisher
     depends_on:
       - subscriber
-
-networks:
-  influx-network:
-    driver: bridge
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

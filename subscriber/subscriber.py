@@ -1,17 +1,15 @@
 from influx_client import insert_measurements
 from paho.mqtt import client as mqtt
 import json
-import logging
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 
 def on_message(client, userdata, message):
-    decoded_payload = message.payload.decode("utf-8")
-    logger.info(f"Received: {decoded_payload}")
-    metrics = json.loads(decoded_payload)
-    insert_measurements(metrics["ping"])
+    try:
+        decoded_payload = message.payload.decode("utf-8")
+        metrics = json.loads(decoded_payload)
+        insert_measurements(metrics["ping"])
+    except:
+        pass
 
 
 client = mqtt.Client(client_id="Subscriber", callback_api_version=mqtt.CallbackAPIVersion.VERSION2)
